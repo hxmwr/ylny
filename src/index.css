@@ -1,0 +1,37 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* calculate scale factor based on viewport */
+:root {
+    /* JS sets this to match the viewport ratio */
+    --scale: 1;
+}
+
+#root {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fcfcfc;
+}
+
+.app-stage {
+    width: calc(1920px * var(--scale));
+    height: calc(1080px * var(--scale));
+    overflow: hidden;
+}
+
+.app-container {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    background: url(./assets/bg.png);
+    /* scale to fit both width AND height */
+    transform: scale(var(--scale));
+}

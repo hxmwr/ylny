@@ -3,9 +3,9 @@ import Icon from "./Icon"
 
 const NAV_ITEMS = [
     { key: 'home', label: '首页', icon: 'home' as const },
-    { key: 'emit', label: '发布', icon: 'emit' as const },
-    { key: 'leaf', label: '成长', icon: 'leaf' as const },
-    { key: 'rocket', label: '探索', icon: 'rocket' as const },
+    { key: 'energy', label: '智能能源管理', icon: 'rocket' as const },
+    { key: 'carbon', label: '碳排放管理', icon: 'emit' as const },
+    { key: 'optimize', label: '能源优化', icon: 'leaf' as const },
 ]
 
 export default function SideNav() {

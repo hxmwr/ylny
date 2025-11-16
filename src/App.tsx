@@ -6,6 +6,7 @@ import './app.css'
 import logo from './assets/logo.png'
 import SideNav from "./SideNav"
 import TopBar from "./TopBar"
+import MainContent from "./MainContent"
 
 function App() {
   useEffect(() => {
@@ -34,10 +35,12 @@ function App() {
           <SideNav />
         </Sider>
         <Layout>
-          <Header style={{ height: 80, background: 'white' }}>
+          <Header style={{ height: 80, background: 'white', borderBottom: '1px solid #f0f0f0' }}>
             <TopBar />
           </Header>
-          <Content></Content>
+          <Content style={{ background: '#f3f5f7', padding: 0 }}>
+            <MainContent />
+          </Content>
         </Layout>
       </Layout>
     </div>

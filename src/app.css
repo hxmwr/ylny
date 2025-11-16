@@ -53,9 +53,44 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 24px;
+
+    .topbar-title {
+        font-size: 24px;
+        font-family: 'YouSheBiaoTiHei', sans-serif;
+        font-weight: normal;
+
+        .title-highlight {
+            color: #3f66ca;
+        }
+
+        .title-normal {
+            color: #5b648d;
+        }
+    }
 
     .right {
         display: flex;
         align-items: center;
+    }
+
+    .topbar-time {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    .topbar-search {
+        border: none;
+    }
+
+    .topbar-search .ant-input {
+        background: transparent;
+    }
+
+    .topbar-search:hover,
+    .topbar-search:focus-within {
+        background: rgba(0, 0, 0, 0.02);
     }
 }

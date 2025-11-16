@@ -2,8 +2,8 @@
     padding: 24px;
     background: #f3f5f7;
     position: relative;
-    overflow-y: auto;
-    height: calc(100vh - 80px);
+    overflow-y: hidden;
+    height: 100%;
 }
 
 .main-content::before {

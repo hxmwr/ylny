@@ -1,14 +1,14 @@
 .main-content {
     padding: 24px;
-    background: #f3f5f7;
     position: relative;
-    overflow-y: hidden;
+    overflow-y: auto;
     height: 100%;
+    scroll-behavior: smooth;
 }
 
 .main-content::before {
     content: '';
-    position: absolute;
+    position: fixed;
     top: -172px;
     left: -300px;
     right: 0;
@@ -173,6 +173,169 @@
     white-space: pre-line;
     width: 100%;
     font-family: 'Source Han Sans CN', sans-serif;
+}
+
+/* Content Sections */
+.content-section {
+    margin-bottom: 48px;
+}
+
+.content-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #3576ed;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #3576ed;
+}
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.placeholder-card {
+    min-height: 400px;
+}
+
+/* Energy Management Grid */
+.energy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.energy-card {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    height: 232px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.energy-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.energy-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(53, 118, 237, 0.05) 0%, rgba(53, 118, 237, 0.15) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.energy-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.energy-card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    margin: 0;
+}
+
+.energy-card-star {
+    cursor: pointer;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.45);
+    transition: color 0.2s ease;
+}
+
+.energy-card-star:hover {
+    color: #faad14;
+}
+
+.energy-card-content {
+    padding: 0 12px 12px 12px;
+    position: relative;
+    z-index: 1;
+    height: calc(100% - 56px);
+}
+
+.energy-card-content.has-scroll {
+    overflow-y: auto;
+}
+
+.energy-card-content.has-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.energy-card-content.has-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.energy-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.energy-tags.multi-row {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.energy-tags.multi-row .energy-tag {
+    width: fit-content;
+}
+
+.energy-tag {
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.energy-tag:hover {
+    background: #f0f5ff;
+    border-color: #3576ed;
+    color: #3576ed;
+}
+
+.energy-dropdown {
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 8px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
 }
 
 /* Responsive adjustments */

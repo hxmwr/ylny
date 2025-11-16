@@ -1,4 +1,3 @@
-import { useState } from "react"
 import Icon from "./Icon"
 
 const NAV_ITEMS = [
@@ -8,16 +7,19 @@ const NAV_ITEMS = [
     { key: 'optimize', label: '能源优化', icon: 'leaf' as const },
 ]
 
-export default function SideNav() {
-    const [activeKey, setActiveKey] = useState<string>(NAV_ITEMS[0].key)
+interface SideNavProps {
+    activeKey: string
+    onSectionChange: (key: string) => void
+}
 
+export default function SideNav({ activeKey, onSectionChange }: SideNavProps) {
     return (
         <div className="side-nav">
             {NAV_ITEMS.map(item => (
                 <div
                     key={item.key}
                     className={`side-nav-item${activeKey === item.key ? ' is-active' : ''}`}
-                    onClick={() => setActiveKey(item.key)}
+                    onClick={() => onSectionChange(item.key)}
                 >
                     <Icon name={item.icon} width={24} height={24} />
                     <span>{item.label}</span>

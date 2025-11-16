@@ -86,7 +86,7 @@ interface MainContentProps {
     activeSection?: string
 }
 
-const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ activeSection }, ref) => {
+const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
     const onPanelChange = (value: Dayjs, mode: any) => {
         console.log(value.format('YYYY-MM-DD'), mode)
     }

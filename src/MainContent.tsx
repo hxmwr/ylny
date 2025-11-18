@@ -23,7 +23,7 @@ interface EnergyCardProps {
     hasScroll?: boolean
 }
 
-function EnergyCard({ title, tags, dropdown, multiRow, hasScroll }: EnergyCardProps) {
+function Block({ title, tags, dropdown, multiRow, hasScroll }: EnergyCardProps) {
     const [starred, setStarred] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
 
@@ -195,26 +195,26 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                 <h2 className="section-title">智能能源管理</h2>
                 <div className="energy-grid">
                     {/* Row 1 */}
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['运行部能源看板', '能碳驾驶舱', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="能源运行监视"
                         tags={['全场能源实时监...', '能源介质监控', '运行部能源监控']}
                         dropdown={['子菜单1', '子菜单1', '子菜单1']}
                     />
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
 
                     {/* Row 2 */}
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="用能需求预测"
                         tags={[
                             '工厂节点管理', '计算项配置', '计划项导入',
@@ -223,21 +223,21 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                         ]}
                         multiRow
                     />
-                    <EnergyCard
+                    <Block
                         title="能源计量核算"
                         tags={['班组计量', '设备计量']}
                     />
 
                     {/* Row 3 */}
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="单耗统计"
                         tags={[
                             '炼油一部', '炼油一部', '炼油一部',
@@ -250,15 +250,15 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                     />
 
                     {/* Row 4 */}
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
-                    <EnergyCard
+                    <Block
                         title="驾驶舱"
                         tags={['能碳驾驶舱', '运行部能源看板', '运行部能源看板']}
                     />
@@ -270,37 +270,37 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                 <h2 className="section-title">碳排放管理</h2>
                 <div className="energy-grid">
                     {/* Row 1 */}
-                    <EnergyCard
+                    <Block
                         title="碳数据管理"
                         tags={['企业基础信息', '低碳数据配置', '低碳数据填报', '低碳数据查询']}
                         multiRow
                     />
-                    <EnergyCard
+                    <Block
                         title="碳数据管理"
                         tags={['企业边界碳排放...', '补充数据表边界...']}
                     />
-                    <EnergyCard
+                    <Block
                         title="我的待办"
                         tags={['我的待办']}
                     />
 
                     {/* Row 2 */}
-                    <EnergyCard
+                    <Block
                         title="碳排放总览"
                         tags={['数据分析总览', '月度数据查询', '年度数据查询']}
                     />
-                    <EnergyCard
+                    <Block
                         title="碳排放报告"
                         tags={['碳排放报告']}
                     />
-                    <EnergyCard
+                    <Block
                         title="MRV管理"
                         tags={['数据质量控制计划', '年度盘查审核', '外审登记管理', '数据对比分析']}
                         multiRow
                     />
 
                     {/* Row 3 */}
-                    <EnergyCard
+                    <Block
                         title="碳排放轨迹监测"
                         tags={['碳排放轨迹监测']}
                     />
@@ -312,32 +312,32 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                 <h2 className="section-title">能源优化</h2>
                 <div className="energy-grid">
                     {/* Row 1 */}
-                    <EnergyCard
+                    <Block
                         title="全厂平衡与监控"
                         tags={['监控图', '平衡表']}
                         dropdown={['蒸汽平衡表', '氢气平衡表', '燃料气平衡表']}
                     />
-                    <EnergyCard
+                    <Block
                         title="动力中心优化"
                         tags={['动力系统能效分...', '蒸汽动力系统优化']}
                     />
-                    <EnergyCard
+                    <Block
                         title="渣油加氢优化"
                         tags={['渣油加氢A', '渣油加氢B', '渣油加氢C']}
                     />
 
                     {/* Row 2 */}
-                    <EnergyCard
+                    <Block
                         title="柴油加氢改质"
                         tags={['工艺图表', '化验图表', '加热炉操作优化', '导航预览']}
                         multiRow
                     />
-                    <EnergyCard
+                    <Block
                         title="柴油加氢裂化"
                         tags={['工艺图表', '化验图表', '加热炉操作优化', '导航预览']}
                         multiRow
                     />
-                    <EnergyCard
+                    <Block
                         title="管网模拟"
                         tags={[
                             '管网信息台账', '超高压蒸汽管网...', '高压蒸汽管网模拟',
@@ -349,7 +349,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                     />
 
                     {/* Row 3 */}
-                    <EnergyCard
+                    <Block
                         title="调度优化"
                         tags={[
                             '调度优化总览', '协同调度优化', '调度优化总览',
@@ -359,7 +359,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                         multiRow
                         hasScroll
                     />
-                    <EnergyCard
+                    <Block
                         title="IBD大数据与算法"
                         tags={[
                             '数据中心', '任务管理', '算法管理',

@@ -1,8 +1,8 @@
 .logo {
-    width: 234px;
+    width: 160px;
     height: 60px;
     padding: 10px;
-    margin: 24px 23px;
+    margin: 16px auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -17,8 +17,7 @@
 }
 
 .side-nav-item {
-    height: 54px;
-    padding: 11px 20px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
     gap: 12px;

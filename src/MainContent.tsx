@@ -93,6 +93,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
 
     return (
         <div className="main-content" ref={ref}>
+            <div className="main-content-wrapper">
             {/* Home Section */}
             <section id="home" className="content-section">
                 {/* Top Row */}
@@ -369,6 +370,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                     />
                 </div>
             </section>
+            </div>
         </div>
     )
 })

@@ -2,9 +2,9 @@ import Icon from "./Icon"
 
 const NAV_ITEMS = [
     { key: 'home', label: '首页', icon: 'home' as const },
-    { key: 'energy', label: '智能能源管理', icon: 'rocket' as const },
-    { key: 'carbon', label: '碳排放管理', icon: 'emit' as const },
-    { key: 'optimize', label: '能源优化', icon: 'leaf' as const },
+    { key: 'energy', label: '智能能源管理', icon: 'energy' as const },
+    { key: 'carbon', label: '碳排放管理', icon: 'carbon' as const },
+    { key: 'optimize', label: '能源优化', icon: 'optimize' as const },
 ]
 
 interface SideNavProps {

@@ -1,13 +1,13 @@
-import iconEmit from './assets/icon-emit.svg'
 import iconHome from './assets/icon-home.svg'
-import iconLeaf from './assets/icon-leaf.svg'
-import iconRocket from './assets/icon-rocket.svg'
+import iconEnergyManage from './assets/能源管理-1.svg'
+import iconCarbonManage from './assets/碳排放管理.svg'
+import iconEnergyOptimize from './assets/能源优化.svg'
 
 const ICON_MAP = {
     home: iconHome,
-    emit: iconEmit,
-    leaf: iconLeaf,
-    rocket: iconRocket,
+    energy: iconEnergyManage,
+    carbon: iconCarbonManage,
+    optimize: iconEnergyOptimize,
 } as const
 
 type IconName = keyof typeof ICON_MAP

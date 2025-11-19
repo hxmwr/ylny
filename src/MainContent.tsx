@@ -79,7 +79,7 @@ const DOC_ITEMS = [
     { id: 6, name: '我的文档', icon: myDoc },
     { id: 7, name: '文档回收站', icon: docRecycleBin },
     { id: 8, name: '文档管理权限', icon: docManagementPermission },
-    { id: 9, name: '文档新增\n左树右表', icon: docAddTree },
+    { id: 9, name: '文档新增', icon: docAddTree },
 ]
 
 interface MainContentProps {

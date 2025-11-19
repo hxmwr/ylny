@@ -10,17 +10,22 @@ import MainContent from "./MainContent"
 
 function App() {
   const [activeSection, setActiveSection] = useState<string>('home')
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLElement | null>(null)
+  const SCROLL_OFFSET = 24
 
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId)
 
     // Scroll to section
+    const container = contentRef.current
     const section = document.getElementById(sectionId)
-    if (section) {
-      const offsetTop = section.offsetTop - 54 - 24 // Account for header height and padding
-      window.scrollTo({
-        top: offsetTop,
+    if (container && section) {
+      const containerRect = container.getBoundingClientRect()
+      const sectionRect = section.getBoundingClientRect()
+      const offsetTop = sectionRect.top - containerRect.top + container.scrollTop
+      const targetTop = Math.max(offsetTop - SCROLL_OFFSET, 0)
+      container.scrollTo({
+        top: targetTop,
         behavior: 'smooth'
       })
     }
@@ -58,8 +63,11 @@ function App() {
         >
           <TopBar />
         </Header>
-        <Content style={{ background: '#f3f5f7', padding: 0, marginTop: 54 }}>
-          <MainContent ref={contentRef} activeSection={activeSection} />
+        <Content
+          ref={contentRef}
+          style={{ overflowY: 'auto', background: '#f3f5f7', padding: 0, marginTop: 60 }}
+        >
+          <MainContent activeSection={activeSection} />
         </Content>
       </Layout>
     </Layout>

@@ -29,6 +29,10 @@
     transition: background 0.2s ease;
 }
 
+.side-nav-item .icon {
+    transition: filter 0.2s ease;
+}
+
 .side-nav-item+.side-nav-item {
     margin-top: 8px;
 }
@@ -44,6 +48,10 @@
 .side-nav-item.is-active {
     background: #3576ed;
     color: #fff;
+}
+
+.side-nav-item.is-active .icon {
+    filter: brightness(0) invert(1);
 }
 
 .topbar {

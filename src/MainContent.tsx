@@ -1,9 +1,19 @@
 import { Card, Calendar } from 'antd'
 import { StarOutlined, StarFilled, RightOutlined, DownOutlined } from '@ant-design/icons'
 import type { Dayjs } from 'dayjs'
-import { forwardRef, useState, useMemo } from 'react'
+import { forwardRef, useState, useMemo, createContext, useContext } from 'react'
 import './mainContent.css'
 import menuData from './menu.json'
+import { useFavorites, generateItemId } from './hooks/useFavorites'
+
+// 收藏功能Context
+interface FavoritesContextType {
+    isFavorite: (itemId: string) => boolean
+    toggleFavorite: (itemId: string, section: string, blockTitle: string, itemName: string, url?: string | null) => void
+    currentSection: string
+    currentBlockTitle: string
+}
+const FavoritesContext = createContext<FavoritesContextType | null>(null)
 
 // Import document management icons
 import docPermissionApply from './assets/文档权限申请.png'
@@ -33,6 +43,7 @@ interface MenuJsonItem {
 // 层级菜单项类型定义（用于Block组件）
 interface MenuItem {
     name: string
+    url?: string | null
     children?: MenuItem[]
 }
 
@@ -40,6 +51,7 @@ interface MenuItem {
 function convertMenuItems(items: MenuJsonItem[]): MenuItem[] {
     return items.map(item => ({
         name: item.displayName,
+        url: item.url,
         children: item.children && item.children.length > 0
             ? convertMenuItems(item.children)
             : undefined
@@ -51,22 +63,87 @@ function findTopLevelGroup(name: string): MenuJsonItem | undefined {
     return (menuData as MenuJsonItem[]).find(item => item.displayName === name)
 }
 
+// 根据section和itemName查找菜单项的URL
+function findMenuItemUrl(section: string, blockTitle: string, itemName: string): string | null {
+    const sectionMap: Record<string, string> = {
+        'energy': '智能能源管理',
+        'carbon': '碳排放管理',
+        'optimize': '能源优化'
+    }
+    const groupName = sectionMap[section]
+    if (!groupName) return null
+
+    const group = findTopLevelGroup(groupName)
+    if (!group || !group.children) return null
+
+    // 查找block
+    const block = group.children.find(child => child.displayName === blockTitle)
+    if (!block || !block.children) return null
+
+    // 递归查找菜单项
+    function findInChildren(items: MenuJsonItem[]): string | null {
+        for (const item of items) {
+            if (item.displayName === itemName && item.url) {
+                return item.url
+            }
+            if (item.children && item.children.length > 0) {
+                const found = findInChildren(item.children)
+                if (found) return found
+            }
+        }
+        return null
+    }
+
+    return findInChildren(block.children)
+}
+
 interface BlockProps {
     title: string
     items: MenuItem[]
     hasScroll?: boolean
+    section: string
 }
 
 // 递归渲染菜单项组件
 function MenuItemRenderer({ item, level = 0 }: { item: MenuItem; level?: number }) {
     const [expanded, setExpanded] = useState(false)
     const hasChildren = item.children && item.children.length > 0
+    const hasLink = !hasChildren && item.url
+    const favoritesContext = useContext(FavoritesContext)
+
+    // 生成当前菜单项的唯一ID
+    const itemId = favoritesContext
+        ? generateItemId(favoritesContext.currentSection, favoritesContext.currentBlockTitle, item.name)
+        : ''
+    const isStarred = favoritesContext?.isFavorite(itemId) ?? false
+
+    const handleStarClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (favoritesContext) {
+            favoritesContext.toggleFavorite(
+                itemId,
+                favoritesContext.currentSection,
+                favoritesContext.currentBlockTitle,
+                item.name,
+                item.url
+            )
+        }
+    }
+
+    const handleItemClick = () => {
+        if (hasChildren) {
+            setExpanded(!expanded)
+        } else if (item.url) {
+            // 在新窗口打开链接
+            window.open(item.url, '_blank', 'noopener,noreferrer')
+        }
+    }
 
     return (
         <div className="menu-item-wrapper">
             <div
-                className={`menu-item level-${level} ${hasChildren ? 'has-children' : ''}`}
-                onClick={() => hasChildren && setExpanded(!expanded)}
+                className={`menu-item level-${level} ${hasChildren ? 'has-children' : ''} ${hasLink ? 'has-link' : ''}`}
+                onClick={handleItemClick}
                 style={{ paddingLeft: level * 12 }}
             >
                 {hasChildren && (
@@ -74,7 +151,14 @@ function MenuItemRenderer({ item, level = 0 }: { item: MenuItem; level?: number 
                         {expanded ? <DownOutlined /> : <RightOutlined />}
                     </span>
                 )}
-                {!hasChildren && <StarOutlined className="leaf-icon" />}
+                {!hasChildren && (
+                    <span className="leaf-star" onClick={handleStarClick}>
+                        {isStarred
+                            ? <StarFilled style={{ color: '#faad14' }} />
+                            : <StarOutlined className="leaf-icon" />
+                        }
+                    </span>
+                )}
                 <span className="menu-item-text">{item.name}</span>
             </div>
             {hasChildren && expanded && (
@@ -88,26 +172,29 @@ function MenuItemRenderer({ item, level = 0 }: { item: MenuItem; level?: number 
     )
 }
 
-function Block({ title, items, hasScroll }: BlockProps) {
-    const [starred, setStarred] = useState(false)
+function Block({ title, items, hasScroll, section }: BlockProps) {
+    const parentContext = useContext(FavoritesContext)
+
+    // 创建一个新的context值，包含当前block的信息
+    const blockContext: FavoritesContextType | null = parentContext ? {
+        ...parentContext,
+        currentSection: section,
+        currentBlockTitle: title
+    } : null
 
     return (
         <div className="energy-card">
             <div className="energy-card-header">
                 <h3 className="energy-card-title">{title}</h3>
-                <div
-                    className="energy-card-star"
-                    onClick={() => setStarred(!starred)}
-                >
-                    {starred ? <StarFilled style={{ color: '#faad14' }} /> : <StarOutlined />}
-                </div>
             </div>
             <div className={`energy-card-content ${hasScroll ? 'has-scroll' : ''}`}>
-                <div className="menu-tree">
-                    {items.map((item, index) => (
-                        <MenuItemRenderer key={index} item={item} level={0} />
-                    ))}
-                </div>
+                <FavoritesContext.Provider value={blockContext}>
+                    <div className="menu-tree">
+                        {items.map((item, index) => (
+                            <MenuItemRenderer key={index} item={item} level={0} />
+                        ))}
+                    </div>
+                </FavoritesContext.Provider>
             </div>
         </div>
     )
@@ -143,6 +230,9 @@ function generateBlocksFromGroup(groupName: string): { title: string; items: Men
 }
 
 const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
+    // 收藏功能
+    const { favorites, isFavorite, toggleFavorite } = useFavorites()
+
     // 动态生成各section的blocks
     const energyBlocks = useMemo(() => generateBlocksFromGroup('智能能源管理'), [])
     const carbonBlocks = useMemo(() => generateBlocksFromGroup('碳排放管理'), [])
@@ -153,6 +243,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
     }
 
     return (
+        <FavoritesContext.Provider value={{ isFavorite, toggleFavorite, currentSection: '', currentBlockTitle: '' }}>
         <div className="main-content" ref={ref}>
             <div className="main-content-wrapper">
             {/* Home Section */}
@@ -221,7 +312,38 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                     bordered={false}
                 >
                     <div className="favorites-content">
-                        {/* Content placeholder */}
+                        {favorites.length === 0 ? (
+                            <div className="favorites-empty">暂无收藏，点击菜单项左侧的星标添加收藏</div>
+                        ) : (
+                            <div className="favorites-list">
+                                {favorites.map(fav => {
+                                    // 优先使用存储的URL，否则从menu.json查找
+                                    const url = fav.url || findMenuItemUrl(fav.section, fav.blockTitle, fav.itemName)
+                                    return (
+                                        <div
+                                            key={fav.itemId}
+                                            className={`favorite-item ${url ? 'has-link' : ''}`}
+                                            onClick={() => url && window.open(url, '_blank', 'noopener,noreferrer')}
+                                        >
+                                            <StarFilled
+                                                className="favorite-star"
+                                                style={{ color: '#faad14' }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    toggleFavorite(fav.itemId, fav.section, fav.blockTitle, fav.itemName, fav.url)
+                                                }}
+                                            />
+                                            <span className="favorite-title">{fav.itemName}</span>
+                                            <span className="favorite-section">
+                                                {fav.section === 'energy' ? '智能能源管理' :
+                                                 fav.section === 'carbon' ? '碳排放管理' : '能源优化'}
+                                                 {' > '}{fav.blockTitle}
+                                            </span>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                 </Card>
 
@@ -262,6 +384,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                             title={block.title}
                             items={block.items}
                             hasScroll={block.items.length > 3 || block.items.some(item => item.children && item.children.length > 0)}
+                            section="energy"
                         />
                     ))}
                 </div>
@@ -277,6 +400,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                             title={block.title}
                             items={block.items}
                             hasScroll={block.items.length > 3 || block.items.some(item => item.children && item.children.length > 0)}
+                            section="carbon"
                         />
                     ))}
                 </div>
@@ -292,12 +416,14 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                             title={block.title}
                             items={block.items}
                             hasScroll={block.items.length > 3 || block.items.some(item => item.children && item.children.length > 0)}
+                            section="optimize"
                         />
                     ))}
                 </div>
             </section>
             </div>
         </div>
+        </FavoritesContext.Provider>
     )
 })
 

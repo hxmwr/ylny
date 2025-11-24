@@ -102,6 +102,76 @@
 
 .favorites-content {
     height: 100%;
+    overflow-y: auto;
+}
+
+/* Favorites List Styles */
+.favorites-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+}
+
+.favorites-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.favorite-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(53, 118, 237, 0.05);
+    border: 1px solid rgba(53, 118, 237, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.favorite-item:hover {
+    background: rgba(53, 118, 237, 0.1);
+    border-color: rgba(53, 118, 237, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(53, 118, 237, 0.15);
+}
+
+.favorite-item.has-link {
+    cursor: pointer;
+}
+
+.favorite-item.has-link:hover .favorite-title {
+    color: #3576ed;
+    text-decoration: underline;
+}
+
+.favorite-star {
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.favorite-star:hover {
+    transform: scale(1.2);
+}
+
+.favorite-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.favorite-section {
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.45);
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
 }
 
 /* Document Management Card */
@@ -362,6 +432,19 @@
     background: rgba(53, 118, 237, 0.08);
 }
 
+.menu-item.has-link {
+    cursor: pointer;
+}
+
+.menu-item.has-link:hover {
+    background: rgba(53, 118, 237, 0.12);
+}
+
+.menu-item.has-link:hover .menu-item-text {
+    color: #3576ed;
+    text-decoration: underline;
+}
+
 .menu-item.has-children {
     font-weight: 500;
     color: rgba(0, 0, 0, 0.88);
@@ -408,15 +491,28 @@
     color: #3576ed;
 }
 
-/* Leaf icon (for items without children) */
-.leaf-icon {
-    font-size: 12px;
+/* Leaf star (for items without children - clickable) */
+.leaf-star {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 6px;
-    color: rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.menu-item:hover .leaf-icon {
-    color: #3576ed;
+.leaf-star:hover {
+    transform: scale(1.2);
+}
+
+.leaf-icon {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.35);
+    transition: color 0.2s ease;
+}
+
+.leaf-star:hover .leaf-icon {
+    color: #faad14;
 }
 
 .menu-item-text {

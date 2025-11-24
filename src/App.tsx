@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Layout } from "antd"
 import { Content, Header } from "antd/es/layout/layout"
 import Sider from "antd/es/layout/Sider"
@@ -8,13 +8,19 @@ import SideNav from "./SideNav"
 import TopBar from "./TopBar"
 import MainContent from "./MainContent"
 
+const SECTION_IDS = ['home', 'energy', 'carbon', 'optimize']
+const SCROLL_OFFSET = 24
+
 function App() {
   const [activeSection, setActiveSection] = useState<string>('home')
   const contentRef = useRef<HTMLElement | null>(null)
-  const SCROLL_OFFSET = 24
+  const isProgrammaticScrollRef = useRef(false)
 
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId)
+
+    // Mark as programmatic scroll
+    isProgrammaticScrollRef.current = true
 
     // Scroll to section
     const container = contentRef.current
@@ -30,6 +36,62 @@ function App() {
       })
     }
   }
+
+  // Detect active section based on scroll position
+  const updateActiveSectionFromScroll = useCallback(() => {
+    const container = contentRef.current
+    if (!container) return
+
+    const containerRect = container.getBoundingClientRect()
+    const threshold = containerRect.top + 100 // Check which section is near the top
+
+    for (const sectionId of SECTION_IDS) {
+      const section = document.getElementById(sectionId)
+      if (section) {
+        const rect = section.getBoundingClientRect()
+        // If section top is above threshold and bottom is below it, it's the active section
+        if (rect.top <= threshold && rect.bottom > threshold) {
+          if (activeSection !== sectionId) {
+            setActiveSection(sectionId)
+          }
+          break
+        }
+      }
+    }
+  }, [activeSection])
+
+  // Listen to user scroll (wheel event only)
+  useEffect(() => {
+    const container = contentRef.current
+    if (!container) return
+
+    const handleWheel = () => {
+      // Reset programmatic scroll flag on user wheel
+      isProgrammaticScrollRef.current = false
+    }
+
+    const handleScroll = () => {
+      // Only update if not programmatic scroll
+      if (!isProgrammaticScrollRef.current) {
+        updateActiveSectionFromScroll()
+      }
+    }
+
+    const handleScrollEnd = () => {
+      // Reset flag after scroll animation ends
+      isProgrammaticScrollRef.current = false
+    }
+
+    container.addEventListener('wheel', handleWheel)
+    container.addEventListener('scroll', handleScroll)
+    container.addEventListener('scrollend', handleScrollEnd)
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel)
+      container.removeEventListener('scroll', handleScroll)
+      container.removeEventListener('scrollend', handleScrollEnd)
+    }
+  }, [updateActiveSectionFromScroll])
 
   return (
     <Layout className="app-container">

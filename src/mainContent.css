@@ -336,6 +336,121 @@
     background: #f5f5f5;
 }
 
+/* Menu Tree - Hierarchical Menu Styles */
+.menu-tree {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item-wrapper {
+    width: 100%;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.menu-item:hover {
+    background: rgba(53, 118, 237, 0.08);
+}
+
+.menu-item.has-children {
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.88);
+}
+
+.menu-item.has-children:hover {
+    background: rgba(53, 118, 237, 0.12);
+}
+
+/* Level styling - different visual for each level */
+.menu-item.level-0 {
+    font-size: 13px;
+}
+
+.menu-item.level-1 {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.menu-item.level-2 {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.menu-item.level-0.has-children {
+    background: rgba(53, 118, 237, 0.05);
+    margin-bottom: 2px;
+}
+
+/* Expand icon */
+.expand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.45);
+    transition: transform 0.2s ease;
+}
+
+.menu-item:hover .expand-icon {
+    color: #3576ed;
+}
+
+/* Leaf icon (for items without children) */
+.leaf-icon {
+    font-size: 12px;
+    margin-right: 6px;
+    color: rgba(0, 0, 0, 0.35);
+}
+
+.menu-item:hover .leaf-icon {
+    color: #3576ed;
+}
+
+.menu-item-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Children container */
+.menu-children {
+    border-left: 1px solid rgba(53, 118, 237, 0.2);
+    margin-left: 12px;
+    padding-left: 4px;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+/* Animation for children */
+.menu-children {
+    animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 1600px) {
     .top-row {

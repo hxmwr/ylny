@@ -55,7 +55,9 @@ async function callTableApi(service: string, payload: any, ticket: string) {
 function getCurrentUsername(): string {
   // 这里需要根据实际情况获取用户名
   // 可以从localStorage或其他地方获取
-  return localStorage.getItem('username') || 'admin'
+  const userInfo = localStorage.getItem('userInfo')
+  return userInfo ? JSON.parse(userInfo)['username'] : 'admin'
+  // return localStorage.getItem('username') || 'admin'
 }
 
 // 查询用户收藏信息

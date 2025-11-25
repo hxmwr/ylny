@@ -6,5 +6,14 @@ export default defineConfig(({command}) => {
   return {
     base: command == 'build' ? '/resource/App_a2c6295cf317ebf4c472e38cbe9e9b64/app/': '/',
     plugins: [react()],
+    server: {
+      proxy: {
+        '/supide-app': {
+          target: 'https://ylos.yulongpc.com.cn',
+          changeOrigin: true,
+          secure: false,
+        }
+      }
+    }
   }
 })

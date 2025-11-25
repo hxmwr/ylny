@@ -231,7 +231,7 @@ function generateBlocksFromGroup(groupName: string): { title: string; items: Men
 
 const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
     // 收藏功能
-    const { favorites, isFavorite, toggleFavorite } = useFavorites()
+    const { favorites, isFavorite, toggleFavorite, loading, error } = useFavorites()
 
     // 动态生成各section的blocks
     const energyBlocks = useMemo(() => generateBlocksFromGroup('智能能源管理'), [])
@@ -310,9 +310,14 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                         </div>
                     }
                     bordered={false}
+                    loading={loading}
                 >
                     <div className="favorites-content">
-                        {favorites.length === 0 ? (
+                        {error ? (
+                            <div className="favorites-error" style={{ color: '#ff4d4f', padding: '10px', textAlign: 'center' }}>
+                                加载失败: {error}
+                            </div>
+                        ) : favorites.length === 0 ? (
                             <div className="favorites-empty">暂无收藏，点击菜单项左侧的星标添加收藏</div>
                         ) : (
                             <div className="favorites-list">

@@ -1,48 +1,39 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { getFavoritesFromBackend, saveFavoritesToBackend } from '../services/favoritesApi'
+import type { FavoriteItem } from '../types/favorites'
 
-const STORAGE_KEY = 'ylny_favorites'
-
-export interface FavoriteItem {
-    itemId: string       // 唯一标识: section_blockTitle_itemName
-    section: string      // 所属section: energy/carbon/optimize
-    blockTitle: string   // 所属block标题
-    itemName: string     // 菜单项名称
-    url: string | null   // 菜单项链接
-    addedAt: number      // 收藏时间戳
-}
-
-// 从localStorage读取收藏列表
-function loadFavorites(): FavoriteItem[] {
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        return stored ? JSON.parse(stored) : []
-    } catch {
-        return []
-    }
-}
-
-// 保存收藏列表到localStorage
-function saveFavorites(favorites: FavoriteItem[]): void {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites))
-    } catch (e) {
-        console.error('Failed to save favorites:', e)
-    }
-}
+export type { FavoriteItem }
 
 export function useFavorites() {
-    const [favorites, setFavorites] = useState<FavoriteItem[]>(loadFavorites)
+    const [favorites, setFavorites] = useState<FavoriteItem[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<string | null>(null)
+    const initializedRef = useRef(false)
 
-    // 监听storage事件，支持多标签页同步
-    useEffect(() => {
-        const handleStorage = (e: StorageEvent) => {
-            if (e.key === STORAGE_KEY) {
-                setFavorites(loadFavorites())
-            }
+    // 从后端加载收藏列表
+    const loadFavorites = useCallback(async () => {
+        try {
+            setLoading(true)
+            setError(null)
+            const data = await getFavoritesFromBackend()
+            setFavorites(data)
+        } catch (err) {
+            console.error('加载收藏列表失败:', err)
+            setError(err instanceof Error ? err.message : '加载失败')
+            // 失败时使用空数组
+            setFavorites([])
+        } finally {
+            setLoading(false)
         }
-        window.addEventListener('storage', handleStorage)
-        return () => window.removeEventListener('storage', handleStorage)
     }, [])
+
+    // 组件挂载时加载数据（避免React Strict Mode重复加载）
+    useEffect(() => {
+        if (!initializedRef.current) {
+            initializedRef.current = true
+            loadFavorites()
+        }
+    }, [loadFavorites])
 
     // 检查是否已收藏
     const isFavorite = useCallback((itemId: string): boolean => {
@@ -50,17 +41,18 @@ export function useFavorites() {
     }, [favorites])
 
     // 切换收藏状态
-    const toggleFavorite = useCallback((itemId: string, section: string, blockTitle: string, itemName: string, url?: string | null) => {
-        setFavorites(prev => {
-            const exists = prev.some(f => f.itemId === itemId)
+    const toggleFavorite = useCallback(async (itemId: string, section: string, blockTitle: string, itemName: string, url?: string | null) => {
+        try {
+            // 基于当前状态计算新的收藏列表
+            const exists = favorites.some(f => f.itemId === itemId)
             let newFavorites: FavoriteItem[]
 
             if (exists) {
                 // 取消收藏
-                newFavorites = prev.filter(f => f.itemId !== itemId)
+                newFavorites = favorites.filter(f => f.itemId !== itemId)
             } else {
                 // 添加收藏
-                newFavorites = [...prev, {
+                newFavorites = [...favorites, {
                     itemId,
                     section,
                     blockTitle,
@@ -70,21 +62,42 @@ export function useFavorites() {
                 }]
             }
 
-            saveFavorites(newFavorites)
-            return newFavorites
-        })
-    }, [])
+            // 立即更新UI状态
+            setFavorites(newFavorites)
+
+            // 异步保存到后端
+            try {
+                await saveFavoritesToBackend(newFavorites)
+            } catch (err) {
+                console.error('保存收藏到后端失败:', err)
+                setError('保存失败，请稍后重试')
+                // 可选：回滚到之前的状态
+                // setFavorites(favorites)
+            }
+        } catch (err) {
+            console.error('切换收藏状态失败:', err)
+            setError(err instanceof Error ? err.message : '操作失败')
+        }
+    }, [favorites])
 
     // 获取某个section的收藏列表
     const getFavoritesBySection = useCallback((section: string): FavoriteItem[] => {
         return favorites.filter(f => f.section === section)
     }, [favorites])
 
+    // 手动刷新收藏列表
+    const refreshFavorites = useCallback(() => {
+        return loadFavorites()
+    }, [loadFavorites])
+
     return {
         favorites,
         isFavorite,
         toggleFavorite,
-        getFavoritesBySection
+        getFavoritesBySection,
+        loading,
+        error,
+        refreshFavorites
     }
 }
 

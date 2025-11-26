@@ -1,5 +1,6 @@
-import { SearchOutlined, ClockCircleOutlined } from "@ant-design/icons"
-import { Input, Avatar, Space } from "antd"
+import { SearchOutlined, ClockCircleOutlined, LogoutOutlined } from "@ant-design/icons"
+import { Input, Avatar, Space, Dropdown } from "antd"
+import type { MenuProps } from "antd"
 import { useEffect, useState } from "react"
 
 export default function TopBar() {
@@ -12,6 +13,20 @@ export default function TopBar() {
 
         return () => clearInterval(timer)
     }, [])
+
+    const handleLogout = () => {
+        localStorage.removeItem('ticket')
+        window.location.href = 'https://ylos.yulongpc.com.cn'
+    }
+
+    const dropdownItems: MenuProps['items'] = [
+        {
+            key: 'logout',
+            icon: <LogoutOutlined />,
+            label: '退出登录',
+            onClick: handleLogout,
+        },
+    ]
 
     const formatTime = (date: Date) => {
         const month = date.getMonth() + 1
@@ -45,19 +60,21 @@ export default function TopBar() {
                         <span>{formatTime(currentTime)}</span>
                     </div>
                     <div style={{ width: 1, height: 32, background: '#f0f0f0' }} />
-                    <Space size={12}>
-                        <Avatar
-                            style={{
-                                background: '#1890ff',
-                            }}
-                            size={32}
-                        >
-                            A
-                        </Avatar>
-                        <span style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.85)' }}>
-                            admin
-                        </span>
-                    </Space>
+                    <Dropdown menu={{ items: dropdownItems }} placement="bottomRight">
+                        <Space size={12} style={{ cursor: 'pointer' }}>
+                            <Avatar
+                                style={{
+                                    background: '#1890ff',
+                                }}
+                                size={32}
+                            >
+                                A
+                            </Avatar>
+                            <span style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.85)' }}>
+                                admin
+                            </span>
+                        </Space>
+                    </Dropdown>
                 </Space>
             </div>
         </div>

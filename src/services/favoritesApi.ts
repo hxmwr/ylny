@@ -55,10 +55,12 @@ async function callTableApi(service: string, payload: any, ticket: string) {
 function getCurrentUsername(): string {
     const u1 = localStorage.getItem('userInfo')
     const u2 = localStorage.getItem('user_info')
-    const u3 = sessionStorage.getItem('userInfo')
-    const u4 = sessionStorage.getItem('user_info')
+    const u3 = localStorage.getItem('personInfo')
+    const u4 = sessionStorage.getItem('userInfo')
+    const u5 = sessionStorage.getItem('user_info')
+    const u6 = sessionStorage.getItem('personInfo')
 
-    const userInfo = u1 ?? u2 ?? u3 ?? u4
+    const userInfo = u1 ?? u2 ?? u3 ?? u4 ?? u5 ?? u6
     if (userInfo) {
         try {
             return JSON.parse(userInfo)['username'] || 'null'

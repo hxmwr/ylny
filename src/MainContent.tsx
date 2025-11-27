@@ -5,6 +5,7 @@ import { forwardRef, useState, useMemo, createContext, useContext } from 'react'
 import './mainContent.css'
 import menuData from './menu.json'
 import { useFavorites, generateItemId } from './hooks/useFavorites'
+import { usePermissions } from './hooks/usePermissions'
 
 // 收藏功能Context
 interface FavoritesContextType {
@@ -233,10 +234,22 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
     // 收藏功能
     const { favorites, isFavorite, toggleFavorite, loading, error } = useFavorites()
 
-    // 动态生成各section的blocks
-    const energyBlocks = useMemo(() => generateBlocksFromGroup('智能能源管理'), [])
-    const carbonBlocks = useMemo(() => generateBlocksFromGroup('碳排放管理'), [])
-    const optimizeBlocks = useMemo(() => generateBlocksFromGroup('能源优化'), [])
+    // 权限过滤功能
+    const { filterBlocks } = usePermissions()
+
+    // 动态生成各section的blocks，并应用权限过滤
+    const energyBlocks = useMemo(() => {
+        const blocks = generateBlocksFromGroup('智能能源管理')
+        return filterBlocks(blocks)
+    }, [filterBlocks])
+    const carbonBlocks = useMemo(() => {
+        const blocks = generateBlocksFromGroup('碳排放管理')
+        return filterBlocks(blocks)
+    }, [filterBlocks])
+    const optimizeBlocks = useMemo(() => {
+        const blocks = generateBlocksFromGroup('能源优化')
+        return filterBlocks(blocks)
+    }, [filterBlocks])
 
     const onPanelChange = (value: Dayjs, mode: any) => {
         console.log(value.format('YYYY-MM-DD'), mode)

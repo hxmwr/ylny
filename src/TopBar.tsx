@@ -1,10 +1,36 @@
 import { SearchOutlined, ClockCircleOutlined, LogoutOutlined } from "@ant-design/icons"
 import { Input, Avatar, Space, Dropdown } from "antd"
 import type { MenuProps } from "antd"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+
+// 获取当前用户名
+function getCurrentUsername(): string {
+    const u1 = localStorage.getItem('userInfo')
+    const u2 = localStorage.getItem('user_info')
+    const u3 = sessionStorage.getItem('userInfo')
+    const u4 = sessionStorage.getItem('user_info')
+
+    const userInfo = u1 ?? u2 ?? u3 ?? u4
+    if (userInfo) {
+        try {
+            return JSON.parse(userInfo)['username'] || 'null'
+        } catch {
+            return 'null'
+        }
+    } else {
+        const u5 = localStorage.getItem('suposUserName')
+        if (u5) {
+            return u5
+        }
+    }
+    // 开发环境使用测试用户
+    const isDev = import.meta.env.DEV
+    return isDev ? 'EMS_youhua2' : 'null'
+}
 
 export default function TopBar() {
     const [currentTime, setCurrentTime] = useState(new Date())
+    const username = useMemo(() => getCurrentUsername(), [])
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -16,6 +42,8 @@ export default function TopBar() {
 
     const handleLogout = () => {
         localStorage.removeItem('ticket')
+        sessionStorage.removeItem('userInfo')
+        localStorage.removeItem('userInfo')
         window.location.href = 'https://ylos.yulongpc.com.cn'
     }
 
@@ -68,10 +96,10 @@ export default function TopBar() {
                                 }}
                                 size={32}
                             >
-                                A
+                                {username.charAt(0).toUpperCase()}
                             </Avatar>
                             <span style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.85)' }}>
-                                admin
+                                {username}
                             </span>
                         </Space>
                     </Dropdown>

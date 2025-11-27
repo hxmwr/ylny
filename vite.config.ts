@@ -12,6 +12,11 @@ export default defineConfig(({command}) => {
           target: 'https://ylos.yulongpc.com.cn',
           changeOrigin: true,
           secure: false,
+        },
+        '/open-api': {
+          target: 'https://ylos.yulongpc.com.cn',
+          changeOrigin: true,
+          secure: false,
         }
       }
     }

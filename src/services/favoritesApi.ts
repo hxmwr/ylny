@@ -9,7 +9,7 @@ function getTicket(): string {
   // 开发环境使用临时ticket
   const isDev = import.meta.env.DEV
   if (isDev) {
-    return 'vNxdb8askOQv97gcT7waK'
+    return 'O0FId-T2AetqKGDAwFkqa'
   }
   // 正式环境从localStorage获取
   return localStorage.getItem('ticket') || ''
@@ -53,11 +53,82 @@ async function callTableApi(service: string, payload: any, ticket: string) {
 
 // 获取当前用户名（从localStorage或其他方式）
 function getCurrentUsername(): string {
-  // 这里需要根据实际情况获取用户名
-  // 可以从localStorage或其他地方获取
-  const userInfo = localStorage.getItem('userInfo')
-  return userInfo ? JSON.parse(userInfo)['username'] : 'admin'
-  // return localStorage.getItem('username') || 'admin'
+    const u1 = localStorage.getItem('userInfo')
+    const u2 = localStorage.getItem('user_info')
+    const u3 = sessionStorage.getItem('userInfo')
+    const u4 = sessionStorage.getItem('user_info')
+
+    const userInfo = u1 ?? u2 ?? u3 ?? u4
+    if (userInfo) {
+        try {
+            return JSON.parse(userInfo)['username'] || 'null'
+        } catch {
+            return 'null'
+        }
+    } else {
+        const u5 = localStorage.getItem('suposUserName')
+        if (u5) {
+            return u5
+        }
+    }
+    // 开发环境使用测试用户
+    const isDev = import.meta.env.DEV
+    return isDev ? 'EMS_youhua2' : 'null'
+}
+
+// 权限菜单项类型
+export interface PermissionMenuItem {
+  url: string
+  [key: string]: any
+}
+
+// 权限API响应类型
+interface PermissionResponse {
+  list: PermissionMenuItem[]
+  [key: string]: any
+}
+
+// 获取用户权限菜单列表
+export async function getUserPermissions(): Promise<Set<string>> {
+  const username = getCurrentUsername()
+  const ticket = getTicket()
+  // 开发环境使用代理，生产环境使用相对路径（同源）
+  const apiUrl = `/open-api/rbac/v2/users/${username}/permissions/menus?companyCode=default_org_company`
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        'accept-language': 'zh-cn',
+        authorization: 'Bearer ' + ticket,
+      },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error(`权限API请求失败: ${response.status} ${response.statusText}`)
+    }
+
+    const result: PermissionResponse = await response.json()
+    console.log('权限菜单返回:', result)
+
+    // 提取所有有权限的url，存入Set便于快速查找
+    const permittedUrls = new Set<string>()
+    if (result.list && Array.isArray(result.list)) {
+      result.list.forEach(item => {
+        if (item.url) {
+          permittedUrls.add(item.url)
+        }
+      })
+    }
+
+    console.log('有权限的URL列表:', permittedUrls)
+    return permittedUrls
+  } catch (error) {
+    console.error('获取权限菜单失败:', error)
+    throw error
+  }
 }
 
 // 查询用户收藏信息

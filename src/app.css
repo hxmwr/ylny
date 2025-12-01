@@ -86,6 +86,13 @@
         align-items: center;
         font-size: 14px;
         color: rgba(0, 0, 0, 0.85);
+        font-variant-numeric: tabular-nums;
+        min-width: 120px;
+    }
+
+    .topbar-search-wrapper {
+        display: flex;
+        align-items: center;
     }
 
     .topbar-search {
@@ -99,5 +106,38 @@
     .topbar-search:hover,
     .topbar-search:focus-within {
         background: rgba(0, 0, 0, 0.02);
+    }
+
+    .topbar-search-input:focus {
+        border-color: #3576ed !important;
+        box-shadow: 0 0 0 2px rgba(53, 118, 237, 0.1);
+    }
+}
+
+/* 搜索下拉框样式 */
+.topbar-search-dropdown {
+    .ant-select-item {
+        padding: 8px 12px;
+    }
+
+    .ant-select-item-option-active {
+        background-color: #f5f7fa;
+    }
+
+    .search-option-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .search-option-name {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 500;
+    }
+
+    .search-option-path {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.45);
     }
 }

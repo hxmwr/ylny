@@ -202,15 +202,15 @@ function Block({ title, items, hasScroll, section }: BlockProps) {
 }
 
 const DOC_ITEMS = [
-    { id: 1, name: '文档权限申请', icon: docPermissionApply, highlighted: true },
-    { id: 2, name: '文档管理', icon: docManagement },
-    { id: 3, name: '文件夹管理', icon: folderManagement },
-    { id: 4, name: '文档新增', icon: docAdd },
-    { id: 5, name: '文档删除', icon: docDelete },
-    { id: 6, name: '我的文档', icon: myDoc },
-    { id: 7, name: '文档回收站', icon: docRecycleBin },
-    { id: 8, name: '文档管理权限', icon: docManagementPermission },
-    { id: 9, name: '文档新增', icon: docAddTree },
+    { id: 1, name: '文档权限申请', icon: docPermissionApply, highlighted: true, url: '/msService/DocManage/docBorrow/docBorrow/docBorrowList?supos_menu_code=DocManage_1.0.0_docBorrow_docBorrowList_copy_1684862221778341' },
+    { id: 2, name: '文档管理', icon: docManagement, url: '/msService/DocManage/document/docDocument/docManageLayout?supos_menu_code=DocManage_1.0.0_document_docManageLayout_copy_1684862221385120' },
+    { id: 3, name: '文件夹管理', icon: folderManagement, url: '/msService/DocManage/docClass/docClass/docClassLayout?supos_menu_code=DocManage_1.0.0_docClass_docClassLayout_copy_1684862221319584' },
+    { id: 4, name: '文档新增', icon: docAdd, url: '/msService/DocManage/document/docDocument/documentList?supos_menu_code=DocManage_1.0.0_document_documentList_copy_1684862222138791' },
+    { id: 5, name: '文档删除', icon: docDelete, url: '/msService/DocManage/docDelApprove/docDelApprove/docDelList?supos_menu_code=DocManage_1.0.0_docDelApprove_docDelList_copy_1684862220696992' },
+    { id: 6, name: '我的文档', icon: myDoc, url: '/msService/DocManage/document/docDocument/myDocList?supos_menu_code=DocManage_1.0.0_document_myDocList_copy_1684862222138785' },
+    { id: 7, name: '文档回收站', icon: docRecycleBin, url: '/msService/DocManage/document/docDocument/docRecycleLayout?supos_menu_code=DocManage_1.0.0_document_docRecycleLayout_copy_1684862221811107' },
+    { id: 8, name: '文档管理权限', icon: docManagementPermission, url: '/msService/DocManage/docPower/userPower/userPowerList?supos_menu_code=DocManage_1.0.0_docPower_userPowerList_copy_1684862222073248' },
+    { id: 9, name: '文档新增', icon: docAddTree, url: '/msService/DocManage/document/docDocument/docmentListLayout?supos_menu_code=DocManage_1.0.0_document_docmentListLayout_copy_1684862222171557' },
 ]
 
 interface MainContentProps {
@@ -381,6 +381,8 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                             <div
                                 key={item.id}
                                 className={`doc-item ${item.highlighted ? 'highlighted' : ''}`}
+                                onClick={() => item.url && window.open(item.url, '_blank', 'noopener,noreferrer')}
+                                style={{ cursor: item.url ? 'pointer' : 'default' }}
                             >
                                 <div className="doc-icon">
                                     <img src={item.icon} alt={item.name} />

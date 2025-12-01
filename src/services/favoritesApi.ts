@@ -9,7 +9,7 @@ function getTicket(): string {
   // 开发环境使用临时ticket
   const isDev = import.meta.env.DEV
   if (isDev) {
-    return 'O0FId-T2AetqKGDAwFkqa'
+    return 'afGAzn8G6KB4hmQnLw9kk'
   }
   // 正式环境从localStorage获取
   return localStorage.getItem('ticket') || ''

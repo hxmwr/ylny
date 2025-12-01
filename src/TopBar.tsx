@@ -1,7 +1,53 @@
 import { SearchOutlined, ClockCircleOutlined, LogoutOutlined } from "@ant-design/icons"
-import { Input, Avatar, Space, Dropdown } from "antd"
+import { Avatar, Space, Dropdown, AutoComplete } from "antd"
 import type { MenuProps } from "antd"
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
+import menuData from './menu.json'
+
+// menu.json 项类型定义
+interface MenuJsonItem {
+    id: number
+    displayName: string
+    url: string | null
+    type: number
+    route: string | null
+    icon: {
+        type: string
+        value: string | null
+    }
+    children: MenuJsonItem[]
+}
+
+// 搜索结果项
+interface SearchItem {
+    displayName: string
+    url: string
+    path: string[]  // 菜单路径，例如：['智能能源管理', '驾驶舱', '能碳驾驶舱']
+}
+
+// 递归扁平化菜单数据，提取所有有 URL 的叶子节点
+function flattenMenuItems(items: MenuJsonItem[], parentPath: string[] = []): SearchItem[] {
+    const result: SearchItem[] = []
+
+    for (const item of items) {
+        const currentPath = [...parentPath, item.displayName]
+
+        if (item.url && (!item.children || item.children.length === 0)) {
+            // 叶子节点，有 URL
+            result.push({
+                displayName: item.displayName,
+                url: item.url,
+                path: currentPath
+            })
+        }
+
+        if (item.children && item.children.length > 0) {
+            result.push(...flattenMenuItems(item.children, currentPath))
+        }
+    }
+
+    return result
+}
 
 // 获取当前用户名
 function getCurrentUsername(): string {
@@ -30,9 +76,42 @@ function getCurrentUsername(): string {
     return isDev ? 'EMS_youhua2' : 'null'
 }
 
+// 预先扁平化菜单数据
+const allMenuItems = flattenMenuItems(menuData as MenuJsonItem[])
+
 export default function TopBar() {
     const [currentTime, setCurrentTime] = useState(new Date())
+    const [searchValue, setSearchValue] = useState('')
     const username = useMemo(() => getCurrentUsername(), [])
+
+    // 搜索过滤逻辑
+    const searchOptions = useMemo(() => {
+        if (!searchValue.trim()) {
+            return []
+        }
+        const keyword = searchValue.toLowerCase()
+        return allMenuItems
+            .filter(item =>
+                item.displayName.toLowerCase().includes(keyword) ||
+                item.path.some(p => p.toLowerCase().includes(keyword))
+            )
+            .slice(0, 10)  // 最多显示10条结果
+            .map(item => ({
+                value: item.url,
+                label: (
+                    <div className="search-option-item">
+                        <div className="search-option-name">{item.displayName}</div>
+                        <div className="search-option-path">{item.path.join(' > ')}</div>
+                    </div>
+                )
+            }))
+    }, [searchValue])
+
+    // 选择搜索结果时打开对应菜单
+    const handleSelect = useCallback((url: string) => {
+        window.open(url, '_blank', 'noopener,noreferrer')
+        setSearchValue('')
+    }, [])
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -74,16 +153,42 @@ export default function TopBar() {
                 <span className="title-normal">管理系统</span>
             </div>
             <div className="right">
-                <Input
-                    className="topbar-search"
-                    placeholder="搜索相关内容"
-                    prefix={<SearchOutlined />}
-                    style={{
-                        width: 200,
-                        background: '#f3f5f7',
-                        borderRadius: 4,
-                    }}
-                />
+                <div className="topbar-search-wrapper" style={{ position: 'relative' }}>
+                    <SearchOutlined
+                        style={{
+                            position: 'absolute',
+                            left: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: '#bfbfbf',
+                            pointerEvents: 'none',
+                            zIndex: 1,
+                        }}
+                    />
+                    <AutoComplete
+                        className="topbar-search"
+                        options={searchOptions}
+                        value={searchValue}
+                        onChange={setSearchValue}
+                        onSelect={handleSelect}
+                        style={{ width: 240 }}
+                        popupMatchSelectWidth={320}
+                    >
+                        <input
+                            className="topbar-search-input"
+                            placeholder="搜索菜单..."
+                            style={{
+                                width: '100%',
+                                height: 32,
+                                padding: '4px 11px 4px 30px',
+                                background: '#f3f5f7',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: 4,
+                                outline: 'none',
+                            }}
+                        />
+                    </AutoComplete>
+                </div>
                 <Space size={16} style={{ marginLeft: 24 }}>
                     <div className="topbar-time">
                         <ClockCircleOutlined style={{ marginRight: 8 }} />

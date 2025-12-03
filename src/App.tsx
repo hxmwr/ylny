@@ -96,7 +96,7 @@ function App() {
   return (
     <Layout className="app-container">
       <Sider
-        width={200}
+        width={220}
         style={{
           background: 'rgba(238, 242, 249, 0.60)',
           borderRight: '1px solid rgba(0, 0, 0, 0.1)',
@@ -112,14 +112,14 @@ function App() {
         </div>
         <SideNav activeKey={activeSection} onSectionChange={handleSectionChange} />
       </Sider>
-      <Layout style={{ marginLeft: 200 }}>
+      <Layout style={{ marginLeft: 220 }}>
         <Header
           style={{
             background: 'white',
             borderBottom: '1px solid #f0f0f0',
             position: 'fixed',
             top: 0,
-            width: 'calc(1440px - 200px)',
+            width: 'calc(100vw - 220px)',
             zIndex: 10
           }}
         >

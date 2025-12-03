@@ -9,14 +9,13 @@ body {
 #root {
     width: 100%;
     height: 100%;
-    background: #fcfcfc;
+    background: url(./assets/bg.png) center top no-repeat, #fcfcfc;
     display: flex;
     justify-content: center;
 }
 
 .app-container {
     width: 100%;
-    max-width: 1440px;
+    max-width: 100%;
     height: 100%;
-    background: url(./assets/bg.png);
 }

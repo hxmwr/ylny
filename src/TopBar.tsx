@@ -171,7 +171,7 @@ export default function TopBar() {
                         value={searchValue}
                         onChange={setSearchValue}
                         onSelect={handleSelect}
-                        style={{ width: 240 }}
+                        style={{ width: 220 }}
                         popupMatchSelectWidth={320}
                     >
                         <input

@@ -9,7 +9,7 @@ function getTicket(): string {
   // 开发环境使用临时ticket
   const isDev = import.meta.env.DEV
   if (isDev) {
-    return '4qGC9iFR0fzC-UbjutBe0'
+    return 'SWo13191qIvqDmiWTBqWu'
   }
   // 正式环境从localStorage获取
   return localStorage.getItem('ticket') || ''
@@ -22,6 +22,8 @@ async function callTableApi(service: string, payload: any, ticket: string) {
     service: service,
     params: payload,
   }
+
+  
 
   const response = await fetch(API_BASE_URL, {
     headers: {

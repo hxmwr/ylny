@@ -6,6 +6,7 @@ import './mainContent.css'
 import menuData from './menu.json'
 import { useFavorites, generateItemId } from './hooks/useFavorites'
 import { usePermissions } from './hooks/usePermissions'
+import PendingTasks from './components/PendingTasks'
 
 // 收藏功能Context
 interface FavoritesContextType {
@@ -275,7 +276,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                         bordered={false}
                     >
                         <div className="info-content">
-                            {/* Content placeholder */}
+                            <PendingTasks />
                         </div>
                     </Card>
 

@@ -1,18 +1,10 @@
 // 工作流相关API
+import { getTicket } from './auth'
 
 // API配置
 const WORKFLOW_CONFIG_URL = '/inter-api/oodm-runtime/callServiceByPath'
 const PENDING_TASKS_URL = '/inter-api/flow-service/v1/tasks/pending'
 const TABLE_PATH = 'system.ene_opt_portal_workflowlist'
-
-// 获取ticket
-function getTicket(): string {
-  const isDev = import.meta.env.DEV
-  if (isDev) {
-    return 'SWo13191qIvqDmiWTBqWu'
-  }
-  return localStorage.getItem('ticket') || ''
-}
 
 // 工作流配置项类型
 export interface WorkflowConfig {

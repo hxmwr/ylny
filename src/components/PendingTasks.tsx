@@ -63,45 +63,43 @@ export default function PendingTasks() {
   }
 
   return (
-    <List
-      className="pending-tasks-list"
-      dataSource={tasks}
-      renderItem={(task) => (
-        <List.Item
-          className="pending-task-item"
-          onClick={() => handleItemClick(task)}
-          style={{ cursor: 'pointer', padding: '12px 0' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <Tag color="blue" style={{ margin: 0 }}>{task.taskName}</Tag>
-              <span style={{
-                fontSize: 14,
-                color: 'rgba(0, 0, 0, 0.85)',
+    <div className="pending-tasks-container" style={{ height: '100%', overflow: 'auto' }}>
+      <List
+        className="pending-tasks-list"
+        dataSource={tasks}
+        split={false}
+        renderItem={(task) => (
+          <List.Item
+            className="pending-task-item"
+            onClick={() => handleItemClick(task)}
+            style={{ cursor: 'pointer', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                <Tag color="blue" style={{ margin: 0, lineHeight: '18px', padding: '0 6px' }}>{task.taskName}</Tag>
+                <span style={{
+                  fontSize: 13,
+                  color: 'rgba(0, 0, 0, 0.85)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {task.title}
+                </span>
+              </div>
+              <div style={{
+                fontSize: 12,
+                color: 'rgba(0, 0, 0, 0.45)',
+                whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
               }}>
-                {task.title}
-              </span>
+                {task.formNo} | {task.initiator} | <ClockCircleOutlined style={{ marginRight: 2 }} />{formatTime(task.createTime)}
+              </div>
             </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              fontSize: 12,
-              color: 'rgba(0, 0, 0, 0.45)'
-            }}>
-              <span>单号: {task.formNo}</span>
-              <span>发起人: {task.initiator}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <ClockCircleOutlined />
-                {formatTime(task.createTime)}
-              </span>
-            </div>
-          </div>
-        </List.Item>
-      )}
-    />
+          </List.Item>
+        )}
+      />
+    </div>
   )
 }

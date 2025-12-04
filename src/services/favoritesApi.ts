@@ -1,19 +1,9 @@
 import type { FavoriteItem } from '../types/favorites'
+import { getTicket, getCurrentUsername } from './auth'
 
 // API配置
 const API_BASE_URL = '/supide-app/ide/runtime/oodm-runtime/callServiceByPath'
 const TABLE_PATH = 'system.ene_opt_portal_userinfo'
-
-// 获取ticket
-function getTicket(): string {
-  // 开发环境使用临时ticket
-  const isDev = import.meta.env.DEV
-  if (isDev) {
-    return 'SWo13191qIvqDmiWTBqWu'
-  }
-  // 正式环境从localStorage获取
-  return localStorage.getItem('ticket') || ''
-}
 
 // 通用API调用函数
 async function callTableApi(service: string, payload: any, ticket: string) {
@@ -22,8 +12,6 @@ async function callTableApi(service: string, payload: any, ticket: string) {
     service: service,
     params: payload,
   }
-
-  
 
   const response = await fetch(API_BASE_URL, {
     headers: {
@@ -51,33 +39,6 @@ async function callTableApi(service: string, payload: any, ticket: string) {
   }
 
   return result
-}
-
-// 获取当前用户名（从localStorage或其他方式）
-function getCurrentUsername(): string {
-    const u1 = localStorage.getItem('userInfo')
-    const u2 = localStorage.getItem('user_info')
-    const u3 = localStorage.getItem('personInfo')
-    const u4 = sessionStorage.getItem('userInfo')
-    const u5 = sessionStorage.getItem('user_info')
-    const u6 = sessionStorage.getItem('personInfo')
-
-    const userInfo = u1 ?? u2 ?? u3 ?? u4 ?? u5 ?? u6
-    if (userInfo) {
-        try {
-            return JSON.parse(userInfo)['username'] || 'null'
-        } catch {
-            return 'null'
-        }
-    } else {
-        const u5 = localStorage.getItem('suposUserName')
-        if (u5) {
-            return u5
-        }
-    }
-    // 开发环境使用测试用户
-    const isDev = import.meta.env.DEV
-    return isDev ? 'EMS_youhua2' : 'null'
 }
 
 // 权限菜单项类型

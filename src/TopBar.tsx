@@ -1,4 +1,4 @@
-import { SearchOutlined, ClockCircleOutlined, LogoutOutlined } from "@ant-design/icons"
+import { SearchOutlined, ClockCircleOutlined, LogoutOutlined, AppstoreOutlined } from "@ant-design/icons"
 import { Avatar, Space, Dropdown, AutoComplete } from "antd"
 import type { MenuProps } from "antd"
 import { useEffect, useState, useMemo, useCallback } from "react"
@@ -129,6 +129,12 @@ export default function TopBar() {
     }
 
     const dropdownItems: MenuProps['items'] = [
+        {
+            key: 'runtime',
+            icon: <AppstoreOutlined />,
+            label: '菜单视图',
+            onClick: () => window.open('https://ylos.yulongpc.com.cn/#/runtime', '_blank'),
+        },
         {
             key: 'logout',
             icon: <LogoutOutlined />,

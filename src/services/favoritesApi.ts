@@ -1,5 +1,5 @@
 import type { FavoriteItem } from '../types/favorites'
-import { getTicket, getCurrentUsername } from './auth'
+import { getTicket, getCompanyCode, getCurrentUsernameAsync } from './auth'
 
 // API配置
 const API_BASE_URL = '/supide-app/ide/runtime/oodm-runtime/callServiceByPath'
@@ -55,10 +55,11 @@ interface PermissionResponse {
 
 // 获取用户权限菜单列表
 export async function getUserPermissions(): Promise<Set<string>> {
-  const username = getCurrentUsername()
+  const username = await getCurrentUsernameAsync()
+  const companyCode = await getCompanyCode()
   const ticket = getTicket()
   // 开发环境使用代理，生产环境使用相对路径（同源）
-  const apiUrl = `/open-api/rbac/v2/users/${username}/permissions/menus?companyCode=default_org_company`
+  const apiUrl = `/open-api/rbac/v2/users/${username}/permissions/menus?companyCode=${companyCode}`
 
   try {
     const response = await fetch(apiUrl, {
@@ -99,7 +100,7 @@ export async function getUserPermissions(): Promise<Set<string>> {
 // 查询用户收藏信息
 export async function getFavoritesFromBackend(): Promise<FavoriteItem[]> {
   const ticket = getTicket()
-  const username = getCurrentUsername()
+  const username = await getCurrentUsernameAsync()
 
   try {
     const result = await callTableApi(
@@ -150,7 +151,7 @@ export async function getFavoritesFromBackend(): Promise<FavoriteItem[]> {
 // 保存用户收藏信息
 export async function saveFavoritesToBackend(favorites: FavoriteItem[]): Promise<void> {
   const ticket = getTicket()
-  const username = getCurrentUsername()
+  const username = await getCurrentUsernameAsync()
   const markInfo = JSON.stringify(favorites)
 
   try {

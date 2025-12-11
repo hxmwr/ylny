@@ -3,6 +3,7 @@ import { Avatar, Space, Dropdown, AutoComplete } from "antd"
 import type { MenuProps } from "antd"
 import { useEffect, useState, useMemo, useCallback } from "react"
 import menuData from './menu.json'
+import { fetchSessionInfo, clearSessionCache } from './services/auth'
 
 // menu.json 项类型定义
 interface MenuJsonItem {
@@ -49,40 +50,17 @@ function flattenMenuItems(items: MenuJsonItem[], parentPath: string[] = []): Sea
     return result
 }
 
-// 获取当前用户名
-function getCurrentUsername(): string {
-    const u1 = localStorage.getItem('userInfo')
-    const u2 = localStorage.getItem('user_info')
-    const u3 = sessionStorage.getItem('userInfo')
-    const u4 = sessionStorage.getItem('user_info')
-    const u5 = sessionStorage.getItem('personInfo')
-    const u6 = localStorage.getItem('personInfo')
-
-    const userInfo = u1 ?? u2 ?? u3 ?? u4 ?? u5 ?? u6
-    if (userInfo) {
-        try {
-            return JSON.parse(userInfo)['username'] || 'null'
-        } catch {
-            return 'null'
-        }
-    } else {
-        const u5 = localStorage.getItem('suposUserName')
-        if (u5) {
-            return u5
-        }
-    }
-    // 开发环境使用测试用户
-    const isDev = import.meta.env.DEV
-    return isDev ? 'EMS_youhua2' : 'null'
-}
-
 // 预先扁平化菜单数据
 const allMenuItems = flattenMenuItems(menuData as MenuJsonItem[])
 
 export default function TopBar() {
     const [currentTime, setCurrentTime] = useState(new Date())
     const [searchValue, setSearchValue] = useState('')
-    const username = useMemo(() => getCurrentUsername(), [])
+    const [username, setUsername] = useState('')
+
+    useEffect(() => {
+        fetchSessionInfo().then(info => setUsername(info.username))
+    }, [])
 
     // 搜索过滤逻辑
     const searchOptions = useMemo(() => {
@@ -122,6 +100,7 @@ export default function TopBar() {
     }, [])
 
     const handleLogout = () => {
+        clearSessionCache()
         localStorage.removeItem('ticket')
         sessionStorage.removeItem('userInfo')
         localStorage.removeItem('userInfo')

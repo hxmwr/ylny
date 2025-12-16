@@ -1,6 +1,115 @@
 import type { FavoriteItem } from '../types/favorites'
 import { getTicket, getCompanyCode, getCurrentUsernameAsync } from './auth'
 
+// 用户菜单项类型（来自新接口）
+export interface UserMenuItem {
+  id: number
+  code: string
+  name: string | null
+  displayName: string
+  url: string | null
+  type: number
+  tokenType: number | null
+  isFreeze: number | null
+  newTab: boolean
+  index: number
+  route: string | null
+  icon: {
+    type: string
+    value: string | null
+  }
+  children: UserMenuItem[]
+  isCollected: boolean
+  isShare: boolean
+  neoBan: number | null
+  creator: string | null
+  createTime: string | null
+  modifier: string | null
+  modifyTime: string | null
+}
+
+// 用户菜单API响应类型
+interface UserMenuResponse {
+  list: UserMenuItem[]
+}
+
+// 获取用户可用菜单列表
+export async function getUserMenus(): Promise<UserMenuItem[]> {
+  const ticket = getTicket()
+  const apiUrl = '/inter-api/rbac/v1/menus/runtime/currentUser'
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        accept: 'application/json, text/plain, */*',
+        'accept-language': 'zh-cn',
+        authorization: 'Bearer ' + ticket,
+        'cache-control': 'no-cache, no-store',
+        'content-type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error(`用户菜单API请求失败: ${response.status} ${response.statusText}`)
+    }
+
+    const result: UserMenuResponse = await response.json()
+    console.log('用户菜单返回:', result)
+
+    return result.list || []
+  } catch (error) {
+    console.error('获取用户菜单失败:', error)
+    throw error
+  }
+}
+
+// 从用户菜单中查找指定名称的菜单项
+export function findMenuByName(menus: UserMenuItem[], name: string): UserMenuItem | null {
+  for (const menu of menus) {
+    if (menu.displayName === name) {
+      return menu
+    }
+    if (menu.children && menu.children.length > 0) {
+      const found = findMenuByName(menu.children, name)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+// 从"能源优化与管理"中提取指定的子菜单
+export function extractEnergyMenus(menus: UserMenuItem[]): {
+  energyMenu: UserMenuItem | null
+  carbonMenu: UserMenuItem | null
+  optimizeMenu: UserMenuItem | null
+} {
+  const energyManagement = findMenuByName(menus, '能源优化与管理')
+
+  if (!energyManagement || !energyManagement.children) {
+    return { energyMenu: null, carbonMenu: null, optimizeMenu: null }
+  }
+
+  const result: {
+    energyMenu: UserMenuItem | null
+    carbonMenu: UserMenuItem | null
+    optimizeMenu: UserMenuItem | null
+  } = { energyMenu: null, carbonMenu: null, optimizeMenu: null }
+
+  for (const child of energyManagement.children) {
+    if (child.displayName === '智能能源管理') {
+      result.energyMenu = child
+    } else if (child.displayName === '碳排放管理') {
+      result.carbonMenu = child
+    } else if (child.displayName === '能源优化') {
+      result.optimizeMenu = child
+    }
+  }
+
+  return result
+}
+
 // API配置
 const API_BASE_URL = '/supide-app/ide/runtime/oodm-runtime/callServiceByPath'
 const TABLE_PATH = 'system.ene_opt_portal_userinfo'

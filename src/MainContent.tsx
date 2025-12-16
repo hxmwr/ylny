@@ -1,11 +1,10 @@
 import { Card, Calendar } from 'antd'
 import { StarOutlined, StarFilled, RightOutlined, DownOutlined } from '@ant-design/icons'
 import type { Dayjs } from 'dayjs'
-import { forwardRef, useState, useMemo, createContext, useContext } from 'react'
+import { forwardRef, useState, createContext, useContext } from 'react'
 import './mainContent.css'
-import menuData from './menu.json'
 import { useFavorites, generateItemId } from './hooks/useFavorites'
-import { usePermissions } from './hooks/usePermissions'
+import { useUserMenus, type MenuItem } from './hooks/useUserMenus'
 import PendingTasks from './components/PendingTasks'
 import NoticeList from './components/NoticeList'
 
@@ -28,77 +27,6 @@ import myDoc from './assets/我的文档.png'
 import docRecycleBin from './assets/文档回收站.png'
 import docManagementPermission from './assets/文档管理权限.png'
 import docAddTree from './assets/文档新增-1.png'
-
-// menu.json 原始类型定义
-interface MenuJsonItem {
-    id: number
-    displayName: string
-    url: string | null
-    type: number
-    route: string | null
-    icon: {
-        type: string
-        value: string | null
-    }
-    children: MenuJsonItem[]
-}
-
-// 层级菜单项类型定义（用于Block组件）
-interface MenuItem {
-    name: string
-    url?: string | null
-    children?: MenuItem[]
-}
-
-// 将menu.json的结构转换为Block需要的结构
-function convertMenuItems(items: MenuJsonItem[]): MenuItem[] {
-    return items.map(item => ({
-        name: item.displayName,
-        url: item.url,
-        children: item.children && item.children.length > 0
-            ? convertMenuItems(item.children)
-            : undefined
-    }))
-}
-
-// 根据displayName查找顶级分组
-function findTopLevelGroup(name: string): MenuJsonItem | undefined {
-    return (menuData as MenuJsonItem[]).find(item => item.displayName === name)
-}
-
-// 根据section和itemName查找菜单项的URL
-function findMenuItemUrl(section: string, blockTitle: string, itemName: string): string | null {
-    const sectionMap: Record<string, string> = {
-        'energy': '智能能源管理',
-        'carbon': '碳排放管理',
-        'optimize': '能源优化'
-    }
-    const groupName = sectionMap[section]
-    if (!groupName) return null
-
-    const group = findTopLevelGroup(groupName)
-    if (!group || !group.children) return null
-
-    // 查找block
-    const block = group.children.find(child => child.displayName === blockTitle)
-    if (!block || !block.children) return null
-
-    // 递归查找菜单项
-    function findInChildren(items: MenuJsonItem[]): string | null {
-        for (const item of items) {
-            if (item.displayName === itemName && item.url) {
-                return item.url
-            }
-            if (item.children && item.children.length > 0) {
-                const found = findInChildren(item.children)
-                if (found) return found
-            }
-        }
-        return null
-    }
-
-    return findInChildren(block.children)
-}
 
 interface BlockProps {
     title: string
@@ -219,39 +147,15 @@ interface MainContentProps {
     activeSection?: string
 }
 
-// 从顶级分组生成blocks数据
-function generateBlocksFromGroup(groupName: string): { title: string; items: MenuItem[] }[] {
-    const group = findTopLevelGroup(groupName)
-    if (!group || !group.children) return []
-
-    return group.children.map(child => ({
-        title: child.displayName,
-        items: child.children && child.children.length > 0
-            ? convertMenuItems(child.children)
-            : []
-    }))
-}
-
 const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
     // 收藏功能
-    const { favorites, isFavorite, toggleFavorite, loading, error } = useFavorites()
+    const { favorites, isFavorite, toggleFavorite, loading: favoritesLoading, error: favoritesError } = useFavorites()
 
-    // 权限过滤功能
-    const { filterBlocks } = usePermissions()
+    // 从新接口获取菜单数据
+    const { energyBlocks, carbonBlocks, optimizeBlocks, loading: menusLoading, error: menusError } = useUserMenus()
 
-    // 动态生成各section的blocks，并应用权限过滤
-    const energyBlocks = useMemo(() => {
-        const blocks = generateBlocksFromGroup('智能能源管理')
-        return filterBlocks(blocks)
-    }, [filterBlocks])
-    const carbonBlocks = useMemo(() => {
-        const blocks = generateBlocksFromGroup('碳排放管理')
-        return filterBlocks(blocks)
-    }, [filterBlocks])
-    const optimizeBlocks = useMemo(() => {
-        const blocks = generateBlocksFromGroup('能源优化')
-        return filterBlocks(blocks)
-    }, [filterBlocks])
+    const loading = favoritesLoading || menusLoading
+    const error = favoritesError || menusError
 
     const onPanelChange = (value: Dayjs, mode: any) => {
         console.log(value.format('YYYY-MM-DD'), mode)
@@ -336,15 +240,12 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                             <div className="favorites-empty">暂无收藏，点击菜单项左侧的星标添加收藏</div>
                         ) : (
                             <div className="favorites-list">
-                                {favorites.map(fav => {
-                                    // 优先使用存储的URL，否则从menu.json查找
-                                    const url = fav.url || findMenuItemUrl(fav.section, fav.blockTitle, fav.itemName)
-                                    return (
-                                        <div
-                                            key={fav.itemId}
-                                            className={`favorite-item ${url ? 'has-link' : ''}`}
-                                            onClick={() => url && window.open(url, '_blank', 'noopener,noreferrer')}
-                                        >
+                                {favorites.map(fav => (
+                                    <div
+                                        key={fav.itemId}
+                                        className={`favorite-item ${fav.url ? 'has-link' : ''}`}
+                                        onClick={() => fav.url && window.open(fav.url, '_blank', 'noopener,noreferrer')}
+                                    >
                                             <StarFilled
                                                 className="favorite-star"
                                                 style={{ color: '#faad14' }}
@@ -360,8 +261,7 @@ const MainContent = forwardRef<HTMLDivElement, MainContentProps>(({ }, ref) => {
                                                  {' > '}{fav.blockTitle}
                                             </span>
                                         </div>
-                                    )
-                                })}
+                                    ))}
                             </div>
                         )}
                     </div>

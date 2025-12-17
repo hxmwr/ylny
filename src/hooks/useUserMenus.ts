@@ -8,11 +8,21 @@ export interface MenuItem {
   children?: MenuItem[]
 }
 
+// 处理菜单URL：type=0的项需要在URL前拼接/main/#
+function processMenuUrl(item: UserMenuItem): string | null {
+  if (!item.url) return null
+  // type=0 的菜单项需要拼接前缀
+  if (item.type === 0) {
+    return `/main/#${item.url}`
+  }
+  return item.url
+}
+
 // 将UserMenuItem转换为MenuItem
 function convertUserMenuItems(items: UserMenuItem[]): MenuItem[] {
   return items.map(item => ({
     name: item.displayName,
-    url: item.url,
+    url: processMenuUrl(item),
     children: item.children && item.children.length > 0
       ? convertUserMenuItems(item.children)
       : undefined
